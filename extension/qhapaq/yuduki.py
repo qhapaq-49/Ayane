@@ -1,4 +1,6 @@
 import unittest
+import sys
+sys.path.append("/home/shiku/AI/shogi/bin/Ayane/source/shogi")
 import Ayane as ayane
 import time
 
@@ -292,8 +294,5 @@ def test_yuduki_battle():
     server.terminate()
 
 if __name__=='__main__':
-    import sys
-    sys.path.append("/home/shiku/AI/shogi/bin/Ayane/source/shogi")
-
     test_yuduki_battle()
     # test_analysis()
