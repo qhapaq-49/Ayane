@@ -589,7 +589,7 @@ class UsiEngine():
     # [SYNC] usi_position()で設定した局面に対する手番を得る。
     # "side"は、やねうら王でしか使えないUSI拡張コマンド
     def get_side_to_move(self) -> Turn:
-        line = self.__send_command_and_getline("moves")
+        line = self.__send_command_and_getline("side")
         return Turn.BLACK if line == "black" else Turn.WHITE
 
 
@@ -703,7 +703,7 @@ class UsiEngine():
                 # positionコマンドは、WaitCommand状態でないと送信できない。
                 elif token == "position":
                     self.wait_for_state(UsiEngineState.WaitCommand)
-                elif token == "moves":
+                elif token == "moves" or token == "side":
                     self.wait_for_state(UsiEngineState.WaitCommand)
                     self.__change_state(UsiEngineState.WaitOneLine)
                 elif token == "usinewgame" or token == "gameover":
@@ -1083,6 +1083,7 @@ class AyaneruServer:
             engine.error_print = self.error_print
         
         # 1P側のエンジンを使って、現局面の手番を得る。
+        self.engines[0].usi_position(self.sfen)
         self.side_to_move = self.engines[0].get_side_to_move()
         self.game_ply = 1
         self.game_result = GameResult.PLAYING
