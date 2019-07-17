@@ -235,32 +235,34 @@ def test_analysis():
 
 def test_yuduki_battle():
     server = YudukiServer()
+    server.error_print = True
     # server = ayane.AyaneruServer()
-    usi1 = ayane.UsiEngine()
-    usi1.set_engine_options({"Hash":"1024","Threads":"4","NetworkDelay":"0","NetworkDelay2":"0","MaxMovesToDraw":"256" \
-                , "MinimumThinkingTime":"0"})
-    usi1.connect("YaneuraOu-tnk")
-
-    usi2 = ayane.UsiEngine()
-    usi2.set_engine_options({"Hash":"1024","Threads":"4","NetworkDelay":"0","NetworkDelay2":"0","MaxMovesToDraw":"256" \
-                , "MinimumThinkingTime":"0"})
-    usi2.connect("YaneuraOu-kppt")
-
     usi3 = ayane.UsiEngine()
     #    usi.debug_print = True
-    usi3.set_engine_options({"Hash":"1024","Threads":"4","NetworkDelay":"0","NetworkDelay2":"0","MaxMovesToDraw":"256" \
+    usi3.set_engine_options({"Hash":"1024","EvalDir":"illqha1.1", "Threads":"4","NetworkDelay":"0","NetworkDelay2":"0","ResignValue" : "2019","MaxMovesToDraw":"256" \
                 , "MinimumThinkingTime":"0"})
     usi3.connect("YaneuraOu-tnk")
 
-    
-    ur = UsiEngineRelay(usi1, usi2, switch_pos = relay_by_ply)
+    usi1 = ayane.UsiEngine()
+    usi1.set_engine_options({"Hash":"1024","EvalDir":"eval", "Threads":"4","NetworkDelay":"0","NetworkDelay2":"0","ResignValue" : "2019","MaxMovesToDraw":"256" \
+                , "MinimumThinkingTime":"0"})
+    usi1.connect("YaneuraOu-tnk")
 
-    server.engines[0] = usi3
-    # server.engines[1] = ur
-    server.engines[1] = usi2 # nnue vs kppt 0.1sec 248-232
+    """
+    usi2 = ayane.UsiEngine()
+    usi2.set_engine_options({"Hash":"1024","Threads":"8","NetworkDelay":"0","NetworkDelay2":"0","ResignValue" : "2019","MaxMovesToDraw":"256" \
+                , "MinimumThinkingTime":"0"})
+    usi2.connect("YaneuraOu-kppt")
+
+        
+    ur = UsiEngineRelay(usi1, usi2, switch_pos = relay_by_ply)
+    """
+    server.engines[0] = usi1
+    server.engines[1] = usi3
+    # server.engines[1] = usi2 # nnue vs kppt 0.1sec 248-232
     
     # 持ち時間設定。
-    server.set_time_setting("byoyomi 500")                 # 1手0.2秒
+    server.set_time_setting("byoyomi 1000")                 # 1手0.2秒
     # server.set_time_setting("time 1000 inc 2000")        # 1秒 + 1手2秒
 
     win1p = 0
