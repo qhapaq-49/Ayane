@@ -97,7 +97,7 @@ class YudukiServer(ayane.AyaneruServer):
 
 
 def relay_by_ply(engine, posstr):
-    if len(posstr.split(" ")) > 38:
+    if len(posstr.split(" ")) > 30:
         # print("relay")
         return True
     return False
@@ -234,12 +234,12 @@ def test_analysis():
     unit.assertEqual( ur.engine_state , ayane.UsiEngineState.Disconnected)
 
 def test_yuduki_battle():
-    server = YudukiServer()
-    server.error_print = True
-    # server = ayane.AyaneruServer()
+    sv = ayane.AyaneruServer()
+    sv.error_print = True
+    # sv = ayane.AyaneruSv()
     usi3 = ayane.UsiEngine()
     #    usi.debug_print = True
-    usi3.set_engine_options({"Hash":"1024","EvalDir":"illqha1.1", "Threads":"4","NetworkDelay":"0","NetworkDelay2":"0","ResignValue" : "2019","MaxMovesToDraw":"256" \
+    usi3.set_engine_options({"Hash":"1024","EvalDir":"Kristallweizen", "Threads":"4","NetworkDelay":"0","NetworkDelay2":"0","ResignValue" : "2019","MaxMovesToDraw":"256" \
                 , "MinimumThinkingTime":"0"})
     usi3.connect("YaneuraOu-tnk")
 
@@ -248,52 +248,54 @@ def test_yuduki_battle():
                 , "MinimumThinkingTime":"0"})
     usi1.connect("YaneuraOu-tnk")
 
-    """
+    
     usi2 = ayane.UsiEngine()
-    usi2.set_engine_options({"Hash":"1024","Threads":"8","NetworkDelay":"0","NetworkDelay2":"0","ResignValue" : "2019","MaxMovesToDraw":"256" \
+    usi2.set_engine_options({"Hash":"1024","EvalDir":"Kristallweizen","Threads":"4","NetworkDelay":"0","NetworkDelay2":"0","ResignValue" : "2019","MaxMovesToDraw":"256" \
                 , "MinimumThinkingTime":"0"})
-    usi2.connect("YaneuraOu-kppt")
+    usi2.connect("YaneuraOu-tnk")
 
         
     ur = UsiEngineRelay(usi1, usi2, switch_pos = relay_by_ply)
-    """
-    server.engines[0] = usi1
-    server.engines[1] = usi3
-    # server.engines[1] = usi2 # nnue vs kppt 0.1sec 248-232
+    
+    sv.engines[0] = ur
+    sv.engines[1] = usi3
+    # sv.engines[1] = usi2 # nnue vs kppt 0.1sec 248-232
     
     # 持ち時間設定。
-    server.set_time_setting("byoyomi 1000")                 # 1手0.2秒
-    # server.set_time_setting("time 1000 inc 2000")        # 1秒 + 1手2秒
+    sv.set_time_setting("byoyomi 1000")                 # 1手0.2秒
+    # sv.set_time_setting("time 1000 inc 2000")        # 1秒 + 1手2秒
 
     win1p = 0
     win2p = 0
     for i in range(114514):
         # これで対局が開始する
-        server.game_start()
+        
         if i % 2 == 0:
-            server.filp_turn = False
+            sv.flip_turn = False
         else:
-            server.filp_turn = True
+            sv.flip_turn = True
+        
         # 対局が終了するのを待つ
-        while not server.game_result.is_gameover():
+        sv.game_start()
+        while not sv.game_result.is_gameover():
             time.sleep(1)
 
         # 対局棋譜の出力
-        if server.game_result == ayane.GameResult.BLACK_WIN:
+        if sv.game_result == ayane.GameResult.BLACK_WIN:
             if i % 2 == 0:
                 win1p += 1
             else:
                 win2p += 1
-        elif server.game_result == ayane.GameResult.WHITE_WIN:
+        elif sv.game_result == ayane.GameResult.WHITE_WIN:
             if i % 2 == 0:
                 win2p += 1
             else:
                 win1p += 1
-        print("game sfen = " + server.sfen)
-        print("game_result = " + str(server.game_result))
+        print("game sfen = " + sv.sfen)
+        print("game_result = " + str(sv.game_result))
         print("stat", win1p, "-", win2p)
             
-    server.terminate()
+    sv.terminate()
 
 if __name__=='__main__':
     test_yuduki_battle()
